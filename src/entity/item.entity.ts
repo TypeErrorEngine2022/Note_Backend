@@ -1,4 +1,4 @@
-import { Column, Entity } from "typeorm";
+import { Column, Entity, UpdateDateColumn } from "typeorm";
 import { BaseEntity } from "./base.entity";
 
 @Entity("toDoItem")
@@ -8,4 +8,7 @@ export class ItemEntity extends BaseEntity {
 
   @Column({ type: "varchar" })
   content: string;
+
+  @UpdateDateColumn({ type: "timestamptz", nullable: true })
+  lastModificationTime: Date;
 }
