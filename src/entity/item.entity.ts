@@ -11,4 +11,7 @@ export class ItemEntity extends BaseEntity {
 
   @UpdateDateColumn({ type: "timestamptz", nullable: true })
   lastModificationTime: Date;
+
+  @Column({ type: "boolean", default: false })
+  isDeleted: boolean;
 }

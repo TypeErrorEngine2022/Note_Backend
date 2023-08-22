@@ -25,6 +25,7 @@ export class ToDoItemService {
     const items = await this.repository
       .createQueryBuilder("item")
       .select(["item.id", "item.title"])
+      .where("item.isDeleted = :isDeleted", { isDeleted: false })
       .orderBy("item.creationTime", "DESC")
       .skip((query.page - 1) * query.pageSize)
       .take(query.pageSize)
@@ -40,14 +41,28 @@ export class ToDoItemService {
     return new ItemListResult(res, query.page, query.pageSize, total);
   }
 
-  public async update(id: string, dto: UpdateItemDto): Promise<boolean> {
-    const item = await this.repository.findOneBy({ id: id });
+  public async getById(id: string) {
+    const item = await this.repository.findOneBy({ id: id, isDeleted: false });
     if (!item) {
       throw new NotFoundException();
     }
+    return item;
+  }
+
+  public async update(id: string, dto: UpdateItemDto): Promise<boolean> {
+    const item = await this.getById(id);
 
     item.title = dto.title;
     item.content = dto.content;
+    await this.repository.save(item);
+
+    return true;
+  }
+
+  public async delete(id: string): Promise<boolean> {
+    const item = await this.getById(id);
+
+    item.isDeleted = true;
     await this.repository.save(item);
 
     return true;

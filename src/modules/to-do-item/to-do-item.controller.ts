@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -44,6 +45,12 @@ export class ToDoItemController {
     @Param("id") id: string
   ): Promise<boolean> {
     await this.service.update(id, dto);
+    return true;
+  }
+
+  @Delete(":id")
+  public async delete(@Param("id") id: string): Promise<boolean> {
+    await this.service.delete(id);
     return true;
   }
 }
