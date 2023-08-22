@@ -14,6 +14,7 @@ import {
   CreateItemDto,
   ItemListResult,
   UpdateItemDto,
+  updateIsCompleteDto,
 } from "../../dto/item.dto";
 import { ApiOkResponse } from "@nestjs/swagger";
 import { PageQueryDto } from "src/dto/base.dto";
@@ -51,6 +52,15 @@ export class ToDoItemController {
   @Delete(":id")
   public async delete(@Param("id") id: string): Promise<boolean> {
     await this.service.delete(id);
+    return true;
+  }
+
+  @Put(":id/complete")
+  public async updateIsComplete(
+    @Param("id") id: string,
+    @Body() dto: updateIsCompleteDto
+  ): Promise<boolean> {
+    await this.service.updateIsComplete(id, dto);
     return true;
   }
 }

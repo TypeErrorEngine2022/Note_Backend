@@ -4,6 +4,7 @@ import {
   ItemBaseResult,
   ItemListResult,
   UpdateItemDto,
+  updateIsCompleteDto,
 } from "../../dto/item.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ItemEntity } from "../../entity/item.entity";
@@ -24,7 +25,7 @@ export class ToDoItemService {
   public async getList(query: PageQueryDto): Promise<ItemListResult> {
     const items = await this.repository
       .createQueryBuilder("item")
-      .select(["item.id", "item.title"])
+      .select(["item.id", "item.title", "item.isCompleted"])
       .where("item.isDeleted = :isDeleted", { isDeleted: false })
       .orderBy("item.creationTime", "DESC")
       .skip((query.page - 1) * query.pageSize)
@@ -36,6 +37,7 @@ export class ToDoItemService {
     const res: ItemBaseResult[] = items.map((item) => ({
       id: item.id,
       title: item.title,
+      isCompleted: item.isCompleted,
     }));
 
     return new ItemListResult(res, query.page, query.pageSize, total);
@@ -50,10 +52,9 @@ export class ToDoItemService {
   }
 
   public async update(id: string, dto: UpdateItemDto): Promise<boolean> {
-    const item = await this.getById(id);
+    let item = await this.getById(id);
 
-    item.title = dto.title;
-    item.content = dto.content;
+    item = { ...item, ...dto };
     await this.repository.save(item);
 
     return true;
@@ -65,6 +66,16 @@ export class ToDoItemService {
     item.isDeleted = true;
     await this.repository.save(item);
 
+    return true;
+  }
+
+  public async updateIsComplete(
+    id: string,
+    dto: updateIsCompleteDto
+  ): Promise<boolean> {
+    const item = await this.getById(id);
+    item.isCompleted = dto.isCompleted;
+    await this.repository.save(item);
     return true;
   }
 }

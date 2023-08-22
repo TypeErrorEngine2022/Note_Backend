@@ -9,6 +9,9 @@ export class ItemEntity extends BaseEntity {
   @Column({ type: "varchar" })
   content: string;
 
+  @Column({ type: "boolean", default: false })
+  isCompleted: boolean;
+
   @UpdateDateColumn({ type: "timestamptz", nullable: true })
   lastModificationTime: Date;
 

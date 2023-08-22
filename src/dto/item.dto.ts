@@ -25,6 +25,11 @@ export class ItemListResult {
 export class ItemBaseResult {
   id: string;
   title: string;
+  isCompleted: boolean;
 }
 
 export class UpdateItemDto extends CreateItemDto {}
+
+export class updateIsCompleteDto {
+  isCompleted: boolean;
+}
