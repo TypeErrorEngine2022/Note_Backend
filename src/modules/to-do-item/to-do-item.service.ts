@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import {
   CreateItemDto,
   ItemBaseResult,
+  ItemDetailResult,
   ItemListResult,
   UpdateItemDto,
   updateIsCompleteDto,
@@ -77,5 +78,10 @@ export class ToDoItemService {
     item.isCompleted = dto.isCompleted;
     await this.repository.save(item);
     return true;
+  }
+
+  public async getDetail(id: string): Promise<ItemDetailResult> {
+    const item = await this.getById(id);
+    return new ItemDetailResult(item);
   }
 }

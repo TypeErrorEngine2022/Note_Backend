@@ -12,6 +12,7 @@ import {
 import { ToDoItemService } from "./to-do-item.service";
 import {
   CreateItemDto,
+  ItemDetailResult,
   ItemListResult,
   UpdateItemDto,
   updateIsCompleteDto,
@@ -62,5 +63,10 @@ export class ToDoItemController {
   ): Promise<boolean> {
     await this.service.updateIsComplete(id, dto);
     return true;
+  }
+
+  @Get(":id")
+  public async getDetail(@Param("id") id: string): Promise<ItemDetailResult> {
+    return await this.service.getDetail(id);
   }
 }
