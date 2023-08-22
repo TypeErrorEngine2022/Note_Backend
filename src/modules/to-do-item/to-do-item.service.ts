@@ -1,5 +1,9 @@
-import { Injectable } from "@nestjs/common";
-import { CreateItemDto, ItemListResult } from "../../dto/item.dto";
+import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  CreateItemDto,
+  ItemListResult,
+  UpdateItemDto,
+} from "../../dto/item.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ItemEntity } from "../../entity/item.entity";
 import { Repository } from "typeorm";
@@ -28,5 +32,18 @@ export class ToDoItemService {
     const total = await this.repository.count();
 
     return new ItemListResult(items, query.page, query.pageSize, total);
+  }
+
+  public async update(id: string, dto: UpdateItemDto): Promise<boolean> {
+    const item = await this.repository.findOneBy({ id: id });
+    if (!item) {
+      throw new NotFoundException();
+    }
+
+    item.title = dto.title;
+    item.content = dto.content;
+    await this.repository.save(item);
+
+    return true;
   }
 }

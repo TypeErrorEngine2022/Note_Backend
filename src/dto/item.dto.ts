@@ -25,3 +25,5 @@ export class ItemListResult {
 export class ItemBaseResult {
   title: string;
 }
+
+export class UpdateItemDto extends CreateItemDto {}

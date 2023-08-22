@@ -1,6 +1,19 @@
-import { Body, Controller, Get, Inject, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Post,
+  Put,
+  Query,
+} from "@nestjs/common";
 import { ToDoItemService } from "./to-do-item.service";
-import { CreateItemDto, ItemListResult } from "../../dto/item.dto";
+import {
+  CreateItemDto,
+  ItemListResult,
+  UpdateItemDto,
+} from "../../dto/item.dto";
 import { ApiOkResponse } from "@nestjs/swagger";
 import { PageQueryDto } from "src/dto/base.dto";
 
@@ -23,5 +36,14 @@ export class ToDoItemController {
       page: query.page || 1,
       pageSize: query.pageSize || 10,
     });
+  }
+
+  @Put(":id")
+  public async update(
+    @Body() dto: UpdateItemDto,
+    @Param("id") id: string
+  ): Promise<boolean> {
+    await this.service.update(id, dto);
+    return true;
   }
 }
