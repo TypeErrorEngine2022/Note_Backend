@@ -12,13 +12,13 @@ export class ToDoItemController {
   @Post()
   @ApiOkResponse()
   public async create(@Body() dto: CreateItemDto): Promise<string> {
-    return this.service.create(dto);
+    return await this.service.create(dto);
   }
 
   @Get()
   @ApiOkResponse({ type: ItemListResult })
   public async getList(@Query() query: PageQueryDto): Promise<ItemListResult> {
-    return this.service.getList({
+    return await this.service.getList({
       ...query,
       page: query.page || 1,
       pageSize: query.pageSize || 10,
