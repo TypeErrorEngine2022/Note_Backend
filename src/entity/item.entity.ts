@@ -3,9 +3,9 @@ import { BaseEntity } from "./base.entity";
 
 @Entity("toDoItem")
 export class ItemEntity extends BaseEntity {
-  @Column()
+  @Column({ type: "varchar" })
   title: string;
 
-  @Column()
+  @Column({ type: "varchar" })
   content: string;
 }

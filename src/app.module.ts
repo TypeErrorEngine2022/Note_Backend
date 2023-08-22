@@ -4,6 +4,7 @@ import { AppService } from "./app.service";
 import "reflect-metadata";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ToDoItemModule } from "./modules/to-do-item/to-do-item.module";
+import { ConfigModule } from "@nestjs/config";
 
 @Module({
   imports: [
@@ -13,10 +14,12 @@ import { ToDoItemModule } from "./modules/to-do-item/to-do-item.module";
       port: 5432,
       username: "postgres",
       password: "root",
-      entities: ["./entity/**/*.ts"],
+      entities: ["dist/**/*.entity.{ts,js}"],
       database: "toDoList",
       synchronize: true,
+      dropSchema: true,
     }),
+    ConfigModule.forRoot({ isGlobal: true }),
     ToDoItemModule,
   ],
   controllers: [AppController],
