@@ -23,5 +23,6 @@ export class ItemListResult {
 }
 
 export class ItemBaseResult {
+  id: string;
   title: string;
 }

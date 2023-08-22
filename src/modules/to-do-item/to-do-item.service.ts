@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { CreateItemDto, ItemListResult } from "../../dto/item.dto";
+import {
+  CreateItemDto,
+  ItemBaseResult,
+  ItemListResult,
+} from "../../dto/item.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ItemEntity } from "../../entity/item.entity";
 import { Repository } from "typeorm";
@@ -19,7 +23,7 @@ export class ToDoItemService {
   public async getList(query: PageQueryDto): Promise<ItemListResult> {
     const items = await this.repository
       .createQueryBuilder("item")
-      .select(["item.title"])
+      .select(["item.id", "item.title"])
       .orderBy("item.creationTime", "DESC")
       .skip((query.page - 1) * query.pageSize)
       .take(query.pageSize)
@@ -27,6 +31,11 @@ export class ToDoItemService {
 
     const total = await this.repository.count();
 
-    return new ItemListResult(items, query.page, query.pageSize, total);
+    const res: ItemBaseResult[] = items.map((item) => ({
+      id: item.id,
+      title: item.title,
+    }));
+
+    return new ItemListResult(res, query.page, query.pageSize, total);
   }
 }
