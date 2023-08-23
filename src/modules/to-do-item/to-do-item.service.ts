@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import {
   CreateItemDto,
+  GetItemByCompleteStatusDto,
   ItemBaseResult,
   ItemDetailResult,
   ItemListResult,
@@ -83,5 +84,31 @@ export class ToDoItemService {
   public async getDetail(id: string): Promise<ItemDetailResult> {
     const item = await this.getById(id);
     return new ItemDetailResult(item);
+  }
+
+  public async getItemsByCompleteStatus(
+    query: GetItemByCompleteStatusDto
+  ): Promise<ItemListResult> {
+    const items = await this.repository
+      .createQueryBuilder("item")
+      .select(["item.id", "item.title", "item.isCompleted"])
+      .where("item.isCompleted = :isCompleted", {
+        isCompleted: query.isCompleted,
+      })
+      .andWhere("item.isDeleted = :isDeleted", { isDeleted: false })
+      .orderBy("item.creationTime", "DESC")
+      .skip((query.page - 1) * query.pageSize)
+      .take(query.pageSize)
+      .getMany();
+
+    const total = await this.repository.count();
+
+    const res: ItemBaseResult[] = items.map((item) => ({
+      id: item.id,
+      title: item.title,
+      isCompleted: item.isCompleted,
+    }));
+
+    return new ItemListResult(res, query.page, query.pageSize, total);
   }
 }

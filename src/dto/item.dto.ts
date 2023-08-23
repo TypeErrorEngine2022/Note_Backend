@@ -1,4 +1,5 @@
 import { ItemEntity } from "src/entity/item.entity";
+import { PageQueryDto } from "./base.dto";
 
 export class CreateItemDto {
   title: string;
@@ -56,5 +57,9 @@ export class ItemDetailResult extends ItemBaseResult {
 export class UpdateItemDto extends CreateItemDto {}
 
 export class updateIsCompleteDto {
+  isCompleted: boolean;
+}
+
+export class GetItemByCompleteStatusDto extends PageQueryDto {
   isCompleted: boolean;
 }

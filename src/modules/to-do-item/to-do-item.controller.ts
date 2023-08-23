@@ -12,6 +12,7 @@ import {
 import { ToDoItemService } from "./to-do-item.service";
 import {
   CreateItemDto,
+  GetItemByCompleteStatusDto,
   ItemDetailResult,
   ItemListResult,
   UpdateItemDto,
@@ -65,8 +66,19 @@ export class ToDoItemController {
     return true;
   }
 
-  @Get(":id")
+  @Get(":id/detail")
   public async getDetail(@Param("id") id: string): Promise<ItemDetailResult> {
     return await this.service.getDetail(id);
+  }
+
+  @Get("/complete")
+  public async getItemsByCompleteStatus(
+    @Query() query: GetItemByCompleteStatusDto
+  ): Promise<ItemListResult> {
+    return await this.service.getItemsByCompleteStatus({
+      ...query,
+      page: query.page || 1,
+      pageSize: query.pageSize || 10,
+    });
   }
 }
