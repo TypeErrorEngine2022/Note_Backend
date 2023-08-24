@@ -27,7 +27,7 @@ export class ToDoItemService {
   public async getList(query: PageQueryDto): Promise<ItemListResult> {
     const items = await this.repository
       .createQueryBuilder("item")
-      .select(["item.id", "item.title", "item.isCompleted"])
+      .select(["item.id", "item.title", "item.content", "item.isCompleted"])
       .where("item.isDeleted = :isDeleted", { isDeleted: false })
       .orderBy("item.creationTime", "DESC")
       .skip((query.page - 1) * query.pageSize)
@@ -36,11 +36,7 @@ export class ToDoItemService {
 
     const total = await this.repository.count();
 
-    const res: ItemBaseResult[] = items.map((item) => ({
-      id: item.id,
-      title: item.title,
-      isCompleted: item.isCompleted,
-    }));
+    const res: ItemBaseResult[] = items.map((item) => new ItemBaseResult(item));
 
     return new ItemListResult(res, query.page, query.pageSize, total);
   }
@@ -91,7 +87,7 @@ export class ToDoItemService {
   ): Promise<ItemListResult> {
     const items = await this.repository
       .createQueryBuilder("item")
-      .select(["item.id", "item.title", "item.isCompleted"])
+      .select(["item.id", "item.title", "item.content", "item.isCompleted"])
       .where("item.isCompleted = :isCompleted", {
         isCompleted: query.isCompleted,
       })
@@ -103,11 +99,7 @@ export class ToDoItemService {
 
     const total = await this.repository.count();
 
-    const res: ItemBaseResult[] = items.map((item) => ({
-      id: item.id,
-      title: item.title,
-      isCompleted: item.isCompleted,
-    }));
+    const res: ItemBaseResult[] = items.map((item) => new ItemBaseResult(item));
 
     return new ItemListResult(res, query.page, query.pageSize, total);
   }

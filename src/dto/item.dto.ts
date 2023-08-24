@@ -29,12 +29,15 @@ export class ItemBaseResult {
   id: string;
   title: string;
   isCompleted: boolean;
+  preview: string;
 
   constructor(item: ItemEntity) {
     const data = {
       id: item.id,
       title: item.title,
       isCompleted: item.isCompleted,
+      preview:
+        item.content.length > 10 ? item.content.slice(0, 11) : item.content,
     };
     Object.assign(this, data);
   }
