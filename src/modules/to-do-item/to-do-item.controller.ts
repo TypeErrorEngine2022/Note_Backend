@@ -42,6 +42,7 @@ export class ToDoItemController {
       page: query.page || 1,
       pageSize: query.pageSize || 10,
     });
+    console.log(res);
     return res;
   }
 

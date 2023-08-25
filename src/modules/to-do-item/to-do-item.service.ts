@@ -25,28 +25,31 @@ export class ToDoItemService {
   }
 
   public async getList(query: SearchQueryDto): Promise<ItemListResult> {
+    console.log(query);
     let queryBuilder = this.repository
       .createQueryBuilder("item")
       .select(["item.id", "item.title", "item.content", "item.isCompleted"])
       .where("item.isDeleted = :isDeleted", { isDeleted: false });
 
     if (query.searchContent) {
-      queryBuilder = queryBuilder
-        .andWhere("item.title ILIKE :searchContent", {
-          searchContent: `%${query.searchContent}%`,
-        })
-        .orWhere("item.content ILIKE :searchContent", {
-          searchContent: `%${query.searchContent}%`,
-        });
+      queryBuilder = queryBuilder.andWhere(
+        "(item.content ILIKE :search OR item.title ILIKE :search)",
+        { search: `%${query.searchContent}%` }
+      );
     }
 
+    if (query.isCompleted) {
+      queryBuilder = queryBuilder.andWhere("item.isCompleted = :isCompleted", {
+        isCompleted: query.isCompleted,
+      });
+    }
     const items = await queryBuilder
       .orderBy("item.creationTime", "DESC")
       .skip((query.page - 1) * query.pageSize)
       .take(query.pageSize)
       .getMany();
 
-    const total = await this.repository.countBy({ isDeleted: false });
+    const total = await queryBuilder.getCount();
 
     const res: ItemBaseResult[] = items.map((item) => new ItemBaseResult(item));
     return new ItemListResult(res, query.page, query.pageSize, total);
