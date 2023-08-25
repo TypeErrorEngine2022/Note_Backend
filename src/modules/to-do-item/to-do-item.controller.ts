@@ -15,11 +15,11 @@ import {
   GetItemByCompleteStatusDto,
   ItemDetailResult,
   ItemListResult,
+  SearchQueryDto,
   UpdateItemDto,
   updateIsCompleteDto,
 } from "../../dto/item.dto";
 import { ApiOkResponse } from "@nestjs/swagger";
-import { PageQueryDto } from "src/dto/base.dto";
 
 @Controller("to-do-item")
 export class ToDoItemController {
@@ -34,7 +34,9 @@ export class ToDoItemController {
 
   @Get()
   @ApiOkResponse({ type: ItemListResult })
-  public async getList(@Query() query: PageQueryDto): Promise<ItemListResult> {
+  public async getList(
+    @Query() query: SearchQueryDto
+  ): Promise<ItemListResult> {
     return await this.service.getList({
       ...query,
       page: query.page || 1,

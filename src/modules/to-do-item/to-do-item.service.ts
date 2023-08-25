@@ -5,13 +5,13 @@ import {
   ItemBaseResult,
   ItemDetailResult,
   ItemListResult,
+  SearchQueryDto,
   UpdateItemDto,
   updateIsCompleteDto,
 } from "../../dto/item.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ItemEntity } from "../../entity/item.entity";
 import { Repository } from "typeorm";
-import { PageQueryDto } from "src/dto/base.dto";
 
 @Injectable()
 export class ToDoItemService {
@@ -24,11 +24,23 @@ export class ToDoItemService {
     return item.id;
   }
 
-  public async getList(query: PageQueryDto): Promise<ItemListResult> {
-    const items = await this.repository
+  public async getList(query: SearchQueryDto): Promise<ItemListResult> {
+    let queryBuilder = this.repository
       .createQueryBuilder("item")
       .select(["item.id", "item.title", "item.content", "item.isCompleted"])
-      .where("item.isDeleted = :isDeleted", { isDeleted: false })
+      .where("item.isDeleted = :isDeleted", { isDeleted: false });
+
+    if (query.searchContent) {
+      queryBuilder = queryBuilder
+        .andWhere("item.title ILIKE :searchContent", {
+          searchContent: `%${query.searchContent}%`,
+        })
+        .orWhere("item.content ILIKE :searchContent", {
+          searchContent: `%${query.searchContent}%`,
+        });
+    }
+
+    const items = await queryBuilder
       .orderBy("item.creationTime", "DESC")
       .skip((query.page - 1) * query.pageSize)
       .take(query.pageSize)

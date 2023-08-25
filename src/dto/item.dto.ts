@@ -66,3 +66,7 @@ export class updateIsCompleteDto {
 export class GetItemByCompleteStatusDto extends PageQueryDto {
   isCompleted: boolean;
 }
+
+export class SearchQueryDto extends PageQueryDto {
+  searchContent?: string;
+}
