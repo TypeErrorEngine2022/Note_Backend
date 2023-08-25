@@ -46,10 +46,9 @@ export class ToDoItemService {
       .take(query.pageSize)
       .getMany();
 
-    const total = await this.repository.count();
+    const total = await this.repository.countBy({ isDeleted: false });
 
     const res: ItemBaseResult[] = items.map((item) => new ItemBaseResult(item));
-
     return new ItemListResult(res, query.page, query.pageSize, total);
   }
 

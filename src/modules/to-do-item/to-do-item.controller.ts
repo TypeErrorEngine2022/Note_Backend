@@ -37,11 +37,12 @@ export class ToDoItemController {
   public async getList(
     @Query() query: SearchQueryDto
   ): Promise<ItemListResult> {
-    return await this.service.getList({
+    const res = await this.service.getList({
       ...query,
       page: query.page || 1,
       pageSize: query.pageSize || 10,
     });
+    return res;
   }
 
   @Put(":id")
