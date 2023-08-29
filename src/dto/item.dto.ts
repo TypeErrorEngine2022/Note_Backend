@@ -71,3 +71,7 @@ export class SearchQueryDto extends PageQueryDto {
   searchContent?: string;
   isCompleted?: boolean;
 }
+
+export class ItemListDto {
+  items: string[];
+}
