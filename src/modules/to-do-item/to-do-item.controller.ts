@@ -14,6 +14,7 @@ import {
   CreateItemDto,
   GetItemByCompleteStatusDto,
   ItemDetailResult,
+  ItemListDto,
   ItemListResult,
   SearchQueryDto,
   UpdateItemDto,
@@ -46,6 +47,22 @@ export class ToDoItemController {
     return res;
   }
 
+  @Get("/complete")
+  public async getItemsByCompleteStatus(
+    @Query() query: GetItemByCompleteStatusDto
+  ): Promise<ItemListResult> {
+    return await this.service.getItemsByCompleteStatus({
+      ...query,
+      page: query.page || 1,
+      pageSize: query.pageSize || 10,
+    });
+  }
+
+  @Delete("batch")
+  public async batchDelete(@Query() query: ItemListDto) {
+    return await this.service.batchDelete(query);
+  }
+
   @Put(":id")
   public async update(
     @Body() dto: UpdateItemDto,
@@ -73,16 +90,5 @@ export class ToDoItemController {
   @Get(":id/detail")
   public async getDetail(@Param("id") id: string): Promise<ItemDetailResult> {
     return await this.service.getDetail(id);
-  }
-
-  @Get("/complete")
-  public async getItemsByCompleteStatus(
-    @Query() query: GetItemByCompleteStatusDto
-  ): Promise<ItemListResult> {
-    return await this.service.getItemsByCompleteStatus({
-      ...query,
-      page: query.page || 1,
-      pageSize: query.pageSize || 10,
-    });
   }
 }

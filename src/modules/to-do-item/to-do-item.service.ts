@@ -4,6 +4,7 @@ import {
   GetItemByCompleteStatusDto,
   ItemBaseResult,
   ItemDetailResult,
+  ItemListDto,
   ItemListResult,
   SearchQueryDto,
   UpdateItemDto,
@@ -116,5 +117,12 @@ export class ToDoItemService {
     const res: ItemBaseResult[] = items.map((item) => new ItemBaseResult(item));
 
     return new ItemListResult(res, query.page, query.pageSize, total);
+  }
+
+  public async batchDelete(query: ItemListDto) {
+    if (!query.items) return false;
+
+    await Promise.all(query.items.map((id: string) => this.delete(id)));
+    return true;
   }
 }
