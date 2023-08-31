@@ -2,9 +2,16 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { ValidationPipe } from "@nestjs/common";
+import { readFileSync } from "fs";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: readFileSync("./secrets/cert.key"),
+    cert: readFileSync("./secrets/cert.crt"),
+  };
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+  });
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   const config = new DocumentBuilder()
     .setTitle("ToDoList Backend")
