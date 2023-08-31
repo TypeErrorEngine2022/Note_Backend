@@ -32,6 +32,16 @@ export class ToDoItemService {
       .select(["item.id", "item.title", "item.content", "item.isCompleted"])
       .where("item.isDeleted = :isDeleted", { isDeleted: false });
 
+    if (query.isDeleted) {
+      queryBuilder = queryBuilder.andWhere("item.isDeleted = :isDeleted", {
+        isDeleted: query.isDeleted,
+      });
+    } else {
+      queryBuilder = queryBuilder.andWhere("item.isDeleted = :isDeleted", {
+        isDeleted: false,
+      });
+    }
+
     if (query.searchContent) {
       queryBuilder = queryBuilder.andWhere(
         "(item.content ILIKE :search OR item.title ILIKE :search)",
