@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ToDoItemService } from "./to-do-item.service";
 import {
@@ -21,8 +22,10 @@ import {
   updateIsCompleteDto,
 } from "../../dto/item.dto";
 import { ApiOkResponse } from "@nestjs/swagger";
+import { JwtGuard } from "src/guards/jwt.guard";
 
 @Controller("to-do-item")
+@UseGuards(JwtGuard)
 export class ToDoItemController {
   @Inject(ToDoItemService)
   private readonly service: ToDoItemService;

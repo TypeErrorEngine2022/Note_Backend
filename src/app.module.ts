@@ -5,6 +5,10 @@ import "reflect-metadata";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ToDoItemModule } from "./modules/to-do-item/to-do-item.module";
 import { ConfigModule } from "@nestjs/config";
+import { AuthModule } from "./modules/auth/auth.module";
+import { UserModule } from "./modules/user/user.module";
+import { UserEntity } from "./entity/User.entity";
+import { ItemEntity } from "./entity/item.entity";
 
 @Module({
   imports: [
@@ -14,13 +18,15 @@ import { ConfigModule } from "@nestjs/config";
       port: 5432,
       username: "postgres",
       password: "root",
-      entities: ["dist/**/*.entity.{ts,js}"],
+      entities: [UserEntity, ItemEntity],
       database: "toDoList",
-      // synchronize: true,
+      synchronize: true,
       // dropSchema: true,
     }),
     ConfigModule.forRoot({ isGlobal: true }),
     ToDoItemModule,
+    AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],

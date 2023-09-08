@@ -5,6 +5,7 @@
 
 # env
 **/envs/
+/secrets
 
 # Logs
 logs
