@@ -23,6 +23,8 @@ import {
 } from "../../dto/item.dto";
 import { ApiOkResponse } from "@nestjs/swagger";
 import { JwtGuard } from "src/guards/jwt.guard";
+import { User } from "../auth/user.decorator";
+import { UserEntity } from "src/entity/User.entity";
 
 @Controller("to-do-item")
 @UseGuards(JwtGuard)
@@ -32,21 +34,25 @@ export class ToDoItemController {
 
   @Post()
   @ApiOkResponse()
-  public async create(@Body() dto: CreateItemDto): Promise<string> {
-    return await this.service.create(dto);
+  public async create(
+    @User() user: UserEntity,
+    @Body() dto: CreateItemDto
+  ): Promise<string> {
+    return await this.service.create(user, dto);
   }
 
   @Get()
   @ApiOkResponse({ type: ItemListResult })
   public async getList(
+    @User() user: UserEntity,
     @Query() query: SearchQueryDto
   ): Promise<ItemListResult> {
-    const res = await this.service.getList({
+    const res = await this.service.getList(user, {
       ...query,
       page: query.page || 1,
       pageSize: query.pageSize || 10,
     });
-    console.log(res);
+    // console.log(res);
     return res;
   }
 

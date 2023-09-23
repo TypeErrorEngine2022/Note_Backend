@@ -1,5 +1,6 @@
-import { Column, Entity, UpdateDateColumn } from "typeorm";
+import { Column, Entity, ManyToOne, UpdateDateColumn } from "typeorm";
 import { BaseEntity } from "./base.entity";
+import { UserEntity } from "./User.entity";
 
 @Entity("toDoItem")
 export class ItemEntity extends BaseEntity {
@@ -17,4 +18,7 @@ export class ItemEntity extends BaseEntity {
 
   @Column({ type: "boolean", default: false })
   isDeleted: boolean;
+
+  @ManyToOne(() => UserEntity, (user) => user.items)
+  user: UserEntity;
 }

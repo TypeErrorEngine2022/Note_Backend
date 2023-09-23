@@ -5,12 +5,13 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { hash, verify } from "argon2";
-import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ConfigService } from "@nestjs/config";
+import { InjectRepository } from "@nestjs/typeorm";
 import { JwtService } from "@nestjs/jwt";
 import { UserEntity } from "src/entity/User.entity";
 import { AuthDto } from "src/dto/auth.dto";
+import { ItemEntity } from "src/entity/item.entity";
 
 @Injectable()
 export class AuthService {
@@ -28,7 +29,7 @@ export class AuthService {
       userName: dto.userName,
     });
     if (userExist) {
-      throw new ForbiddenException("email is already used");
+      throw new ForbiddenException("userName is already used");
     }
 
     const passwordHash = await hash(dto.password);
@@ -36,9 +37,12 @@ export class AuthService {
     const user = this.userRepository.create({
       userName: dto.userName,
       passwordHash: passwordHash,
+      items: new Array<ItemEntity>(),
     });
 
-    await this.userRepository.insert(user);
+    console.log(user);
+
+    await this.userRepository.save(user);
     return this.signToken(user.userName);
   }
 

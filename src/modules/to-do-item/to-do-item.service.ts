@@ -13,24 +13,42 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { ItemEntity } from "../../entity/item.entity";
 import { Repository } from "typeorm";
+import { UserEntity } from "src/entity/User.entity";
 
 @Injectable()
 export class ToDoItemService {
   @InjectRepository(ItemEntity)
-  private readonly repository: Repository<ItemEntity>;
+  private readonly itemRepository: Repository<ItemEntity>;
 
-  public async create(dto: CreateItemDto) {
-    const item = await this.repository.create(dto);
-    await this.repository.insert(item);
+  @InjectRepository(UserEntity)
+  private readonly userRepository: Repository<UserEntity>;
+
+  public async create(user: UserEntity, dto: CreateItemDto) {
+    const item = await this.itemRepository.create({ ...dto, user: user });
+    await this.itemRepository.insert(item);
+    console.log(item);
     return item.id;
   }
 
-  public async getList(query: SearchQueryDto): Promise<ItemListResult> {
+  public async getList(
+    user: UserEntity,
+    query: SearchQueryDto
+  ): Promise<ItemListResult> {
     console.log(query);
-    let queryBuilder = this.repository
+    console.log(user.id);
+    let queryBuilder = this.itemRepository
       .createQueryBuilder("item")
-      .select(["item.id", "item.title", "item.content", "item.isCompleted"])
-      .where("item.isDeleted = :isDeleted", { isDeleted: false });
+      .leftJoin("item.user", "user")
+      .select([
+        "item.id",
+        "item.title",
+        "item.content",
+        "item.isCompleted",
+        "user",
+        "item.creationTime",
+      ])
+      .where("item.isDeleted = :isDeleted", { isDeleted: false })
+      .andWhere("user.id = :id", { id: user.id });
 
     if (query.isDeleted) {
       queryBuilder = queryBuilder.andWhere("item.isDeleted = :isDeleted", {
@@ -67,7 +85,10 @@ export class ToDoItemService {
   }
 
   public async getById(id: string) {
-    const item = await this.repository.findOneBy({ id: id, isDeleted: false });
+    const item = await this.itemRepository.findOneBy({
+      id: id,
+      isDeleted: false,
+    });
     if (!item) {
       throw new NotFoundException();
     }
@@ -78,7 +99,7 @@ export class ToDoItemService {
     let item = await this.getById(id);
 
     item = { ...item, ...dto };
-    await this.repository.save(item);
+    await this.itemRepository.save(item);
 
     return true;
   }
@@ -87,7 +108,7 @@ export class ToDoItemService {
     const item = await this.getById(id);
 
     item.isDeleted = true;
-    await this.repository.save(item);
+    await this.itemRepository.save(item);
 
     return true;
   }
@@ -98,7 +119,7 @@ export class ToDoItemService {
   ): Promise<boolean> {
     const item = await this.getById(id);
     item.isCompleted = dto.isCompleted;
-    await this.repository.save(item);
+    await this.itemRepository.save(item);
     return true;
   }
 
@@ -110,7 +131,7 @@ export class ToDoItemService {
   public async getItemsByCompleteStatus(
     query: GetItemByCompleteStatusDto
   ): Promise<ItemListResult> {
-    const items = await this.repository
+    const items = await this.itemRepository
       .createQueryBuilder("item")
       .select(["item.id", "item.title", "item.content", "item.isCompleted"])
       .where("item.isCompleted = :isCompleted", {
@@ -122,7 +143,7 @@ export class ToDoItemService {
       .take(query.pageSize)
       .getMany();
 
-    const total = await this.repository.count();
+    const total = await this.itemRepository.count();
 
     const res: ItemBaseResult[] = items.map((item) => new ItemBaseResult(item));
 

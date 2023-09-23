@@ -13,6 +13,7 @@ export class AuthController {
     @Body() dto: AuthDto,
     @Res() res: Response
   ): Promise<boolean> {
+    console.log("signup");
     const { access_token } = await this.authService.signup(dto);
     res.cookie("jwt", access_token, {
       httpOnly: true,
