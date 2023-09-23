@@ -1,7 +1,7 @@
 # Note Backend
 Built with NestJS, TypeORM, Postgress  
-Support HTTPS (self-signed ssl)  
-Support JWT cookie-based authentication (more secure)
+Support HTTPS (self-signed ssl is not provided to github)  
+Support JWT cookie-based authentication (set the secret in your .env file)
 
 ## Installation
 
