@@ -3,7 +3,14 @@ Built with NestJS, TypeORM, Postgress
 Support HTTPS (self-signed ssl)  
 Support JWT cookie-based authentication
 
-## Setup
-```pnpm i```  
-```pnpm start:dev```  
-port 3333
+## Installation
+
+```bash
+pnpm install
+```
+
+## Usage
+
+```bash
+pnpm dev
+```
